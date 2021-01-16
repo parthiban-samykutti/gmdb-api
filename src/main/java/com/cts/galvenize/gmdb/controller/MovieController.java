@@ -5,10 +5,7 @@ import com.cts.galvenize.gmdb.exception.MovieNotFoundException;
 import com.cts.galvenize.gmdb.service.MovieService;
 import org.apache.catalina.LifecycleState;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +20,7 @@ public class MovieController {
     public List findAllMovies(){
         return movieService.findAllMovies();
     }
+
     @GetMapping("/title/{title}")
     public Movie findMovieByTitle(final @PathVariable("title") String movieTitle) throws MovieNotFoundException {
         Movie movie = movieService.findMovieByTitle(movieTitle);
@@ -30,5 +28,10 @@ public class MovieController {
             throw new MovieNotFoundException("Movie doesn't exist");
         }
         return movie;
+    }
+
+    @PutMapping("/title/{title}/rating/{rating}")
+    public Movie updateRatingByTitle(final @PathVariable("title") String movieTitle, final @PathVariable("rating") String movieRating){
+        return movieService.updateRatingByTitle( movieTitle, movieRating);
     }
 }

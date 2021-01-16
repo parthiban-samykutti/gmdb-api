@@ -19,6 +19,7 @@ import java.util.List;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -159,6 +160,31 @@ public class MovieControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$").value("Movie doesn't exist"));
         verify(movieService, times(1)).findMovieByTitle(any());
+    }
+
+    /**
+     * As a user, I can give a star rating to a movie so that I can share my experiences with others.
+     *
+     * Given an existing movie
+     * When I submit a 5 star rating
+     * Then I can see it in the movie details.
+     * @throws Exception
+     */
+    @Test
+    @DisplayName("updateRatingByTitle - existing movie")
+    public void testUpdateRatingByTitle() throws Exception {
+        Movie movie = buildSingleMovieList().get(0);
+        movie.setRating("5");
+        when(movieService.updateRatingByTitle(any(), any())).thenReturn(movie);
+        mockMvc.perform(put("/api/gmdb/movies/title/{title}/rating/{rating}", "The Avengers", "5"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("title").value(movie.getTitle()))
+                .andExpect(jsonPath("director").value(movie.getDirector()))
+                .andExpect(jsonPath("actors").value(movie.getActors()))
+                .andExpect(jsonPath("release").value(movie.getRelease()))
+                .andExpect(jsonPath("description").value(movie.getDescription()))
+                .andExpect(jsonPath("rating").value("5"));
+        verify(movieService, times(1)).updateRatingByTitle(any(), any());
     }
 
     /**

@@ -15,6 +15,11 @@ public class MovieService {
     }
 
     public Movie findMovieByTitle(String movieTitle) {
+
+        return null;
+    }
+
+    public Movie updateRatingByTitle(String movieTitle, String movieRating) {
         return null;
     }
 }

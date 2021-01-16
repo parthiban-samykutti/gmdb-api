@@ -10,3 +10,4 @@ Then I can see a list of all movies.
 | /api/gmdb/movies | GET         | 200         | List all the available movies titles |   |
 | /api/gmdb/movies/title/{title} | GET             |   200          |    Return the movie detail matched with title.                                  |   |
 | /api/gmdb/movies/title/{title} | GET           |     404        |      Return a message  'Movie doesn't exist'                 |   |
+| /api/gmdb/movies/title/{title}/rating/{rating} | PUT             |   200          |    Update the rating to the movie matched with title and Return the movie detail.                                  |   |
