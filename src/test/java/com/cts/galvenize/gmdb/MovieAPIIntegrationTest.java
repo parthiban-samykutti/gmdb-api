@@ -85,6 +85,14 @@ public class MovieAPIIntegrationTest {
                 .andExpect(jsonPath("rating").doesNotExist());
     }
 
+    @Test
+    @DisplayName("findMovieByTitle - non-existing movie")
+    public void testFindMovieByTitleWithNonExistingMovie() throws Exception {
+        mockMvc.perform(get("/api/gmdb/movies/title/{title}", "WonderWomen"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$").value("Movie doesn't exist"));
+    }
+
     private void createSuperManMovie() {
         Movie movie = Movie.builder()
                 .title("Superman Returns")
