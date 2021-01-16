@@ -21,8 +21,7 @@ public class MovieService {
     }
 
     public Movie findMovieByTitle(String movieTitle) {
-
-        return movieRepository.findById(movieTitle).get();
+        return movieRepository.findById(movieTitle).orElseGet(()->null);
     }
 
     public Movie updateRatingByTitle(String movieTitle, String movieRating) {

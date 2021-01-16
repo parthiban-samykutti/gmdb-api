@@ -48,6 +48,15 @@ public class MovieServiceTest {
         verify(movieRepository, times(1)).findById(any());
     }
 
+    @Test
+    @DisplayName("findMovieByTitle - Find movie by title with non existing title")
+    public void testFindMovieByTitleNonExistingMovie() throws IOException {
+        when(movieRepository.findById(any())).thenReturn(Optional.ofNullable(null));
+        Movie actualMovie= movieService.findMovieByTitle("The Avengers");
+        assertThat(actualMovie).isNull();
+        verify(movieRepository, times(1)).findById(any());
+    }
+
     /**
      * Builds a Movie list with multiple movie from a json file.
      *
