@@ -16,6 +16,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import javax.transaction.Transactional;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -150,6 +152,25 @@ public class MovieAPIIntegrationTest {
                 .andExpect(jsonPath("review").value(movie.getReview()));
     }
 
+    @Test
+    @DisplayName("updateReviewAndRatingByTitle - existing movie, but without Rating")
+    public void testUpdateReviewAndRatingByTitleWithoutRating() throws Exception {
+        createAvengerMovie(null);
+        MovieUpdateRequest updateRequest = MovieUpdateRequest.builder()
+                .review("Good movie to watch")
+                .build();
+        ObjectMapper objectMapper = new ObjectMapper();
+        mockMvc.perform(put("/api/gmdb/movies/title/{title}", "The Avengers")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$").value("A star rating is required"));
+
+    }
+
+    /**
+     * Uitlity method to create SuperMan movie without rating in DB
+     */
     private void createSuperManMovie() {
         Movie movie = Movie.builder()
                 .title("Superman Returns")
@@ -161,6 +182,9 @@ public class MovieAPIIntegrationTest {
         movieRepository.save(movie);
     }
 
+    /**
+     * Uitlity method to create SuperMan movie with/without rating in DB
+     */
     private Movie createAvengerMovie(Rating rating) {
         Movie movie = Movie.builder()
                 .title("The Avengers")

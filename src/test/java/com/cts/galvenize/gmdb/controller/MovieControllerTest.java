@@ -275,7 +275,6 @@ public class MovieControllerTest {
                 .content(objectMapper.writeValueAsString(updateRequest)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$").value("A star rating is required"));
-        ;
         verify(movieService, times(0)).updateRatingAndReviewByTitle(any(), any());
     }
 
