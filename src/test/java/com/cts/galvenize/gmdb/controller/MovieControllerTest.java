@@ -2,6 +2,7 @@ package com.cts.galvenize.gmdb.controller;
 
 import com.cts.galvenize.gmdb.entity.Movie;
 import com.cts.galvenize.gmdb.service.MovieService;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,6 +30,14 @@ public class MovieControllerTest {
     @MockBean
     private MovieService movieService;
 
+    /**
+     * As a user, I should see a list of movies when I visit GMDB.
+     * <p>
+     * When I visit GMDB
+     * Then I can see a list of all movies.
+     *
+     * @throws Exception
+     */
     @Test
     @DisplayName("findAllMovies - Null value")
     public void testFindAllMoviesWithNullValue() throws Exception {
@@ -39,6 +48,14 @@ public class MovieControllerTest {
         verify(movieService, times(1)).findAllMovies();
     }
 
+    /**
+     * As a user, I should see a list of movies when I visit GMDB.
+     * <p>
+     * When I visit GMDB
+     * Then I can see a list of all movies.
+     *
+     * @throws Exception
+     */
     @Test
     @DisplayName("findAllMovies - empty list")
     public void testFindAllMoviesWithEmptyList() throws Exception {
@@ -47,6 +64,14 @@ public class MovieControllerTest {
                 .andExpect(jsonPath("length()").value(0));
     }
 
+    /**
+     * As a user, I should see a list of movies when I visit GMDB.
+     * <p>
+     * When I visit GMDB
+     * Then I can see a list of all movies.
+     *
+     * @throws Exception
+     */
     @Test
     @DisplayName("findAllMovies - One value")
     public void testFindAllMoviesWithOneValue() throws Exception {
@@ -61,6 +86,43 @@ public class MovieControllerTest {
                 .andExpect(jsonPath("$[0].description").value("Earth's mightiest heroes must come together and learn to fight as a team if they are going to stop the mischievous Loki and his alien army from enslaving humanity."))
                 .andExpect(jsonPath("$[0].rating").doesNotExist());
         verify(movieService, times(1)).findAllMovies();
+    }
+
+    /**
+     * As a user, I should see a list of movies when I visit GMDB.
+     * <p>
+     * When I visit GMDB
+     * Then I can see a list of all movies.
+     *
+     * @throws Exception
+     */
+    @Test
+    @DisplayName("findAllMovies - Multiple value")
+    public void testFindAllMoviesWithMultipleValue() throws Exception {
+        when(movieService.findAllMovies()).thenReturn(buildMultipleMovieList());
+        mockMvc.perform(get("/api/gmdb/movies"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("length()").value(7))
+                .andExpect(jsonPath("$[0].title").value("The Avengers"))
+                .andExpect(jsonPath("$[0].director").value("Joss Whedon"))
+                .andExpect(jsonPath("$[0].actors").value("Robert Downey Jr., Chris Evans, Mark Ruffalo, Chris Hemsworth"))
+                .andExpect(jsonPath("$[0].release").value("2012"))
+                .andExpect(jsonPath("$[0].description").value("Earth's mightiest heroes must come together and learn to fight as a team if they are going to stop the mischievous Loki and his alien army from enslaving humanity."))
+                .andExpect(jsonPath("$[0].rating").doesNotExist());
+        verify(movieService, times(1)).findAllMovies();
+    }
+
+    /**
+     * Builds a Movie list with multiple movie from a json file.
+     *
+     * @return List<Movie>
+     * @throws IOException
+     */
+    private List<Movie> buildMultipleMovieList() throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        List<Movie> movieList = objectMapper.readValue(MovieControllerTest.class.getClassLoader().getResourceAsStream("movies.json"), new TypeReference<ArrayList<Movie>>() {
+        });
+        return movieList;
     }
 
     /**
