@@ -1,6 +1,7 @@
 package com.cts.galvenize.gmdb.controller;
 
 import com.cts.galvenize.gmdb.entity.Movie;
+import com.cts.galvenize.gmdb.exception.MovieNotFoundException;
 import com.cts.galvenize.gmdb.service.MovieService;
 import org.apache.catalina.LifecycleState;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,11 @@ public class MovieController {
         return movieService.findAllMovies();
     }
     @GetMapping("/title/{title}")
-    public Movie findMovieByTitle(final @PathVariable("title") String movieTitle){
-        return movieService.findMovieByTitle(movieTitle);
+    public Movie findMovieByTitle(final @PathVariable("title") String movieTitle) throws MovieNotFoundException {
+        Movie movie = movieService.findMovieByTitle(movieTitle);
+        if(movie == null){
+            throw new MovieNotFoundException("Movie doesn't exist");
+        }
+        return movie;
     }
 }

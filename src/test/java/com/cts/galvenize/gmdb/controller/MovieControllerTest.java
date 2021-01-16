@@ -112,6 +112,17 @@ public class MovieControllerTest {
         verify(movieService, times(1)).findAllMovies();
     }
 
+    /**
+     * As a user, I can browse each movie so I can learn all the details.
+     * <p>
+     * Rule: Movie details include title, director, actors, release year, description and star rating.
+     * <p>
+     * Given an existing movie
+     * When I visit that title
+     * Then I can see all the movie details.
+     *
+     * @throws Exception
+     */
     @Test
     @DisplayName("findMovieByTitle - existing movie")
     public void testFindMovieByTitleWithExistingMovie() throws Exception {
@@ -125,6 +136,28 @@ public class MovieControllerTest {
                 .andExpect(jsonPath("release").value(movie.getRelease()))
                 .andExpect(jsonPath("description").value(movie.getDescription()))
                 .andExpect(jsonPath("rating").doesNotExist());
+        verify(movieService, times(1)).findMovieByTitle(any());
+    }
+
+    /**
+     * As a user, I can browse each movie so I can learn all the details.
+     * <p>
+     * Rule: Movie details include title, director, actors, release year, description and star rating.
+     * <p>
+     * Given a non-existing movie
+     * When I visit that title
+     * Then I receive a friendly message that it doesn't exist.
+     *
+     * @throws Exception
+     */
+    @Test
+    @DisplayName("findMovieByTitle - non-existing movie")
+    public void testFindMovieByTitleWithNonExistingMovie() throws Exception {
+        Movie movie = null;
+        when(movieService.findMovieByTitle(any())).thenReturn(movie);
+        mockMvc.perform(get("/api/gmdb/movies/title/{title}", "WonderWomen"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$").value("Movie doesn't exist"));
         verify(movieService, times(1)).findMovieByTitle(any());
     }
 
