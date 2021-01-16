@@ -1,6 +1,7 @@
 package com.cts.galvenize.gmdb.controller;
 
 import com.cts.galvenize.gmdb.entity.Movie;
+import com.cts.galvenize.gmdb.exception.InvalidValueException;
 import com.cts.galvenize.gmdb.exception.MovieNotFoundException;
 import com.cts.galvenize.gmdb.model.MovieUpdateRequest;
 import com.cts.galvenize.gmdb.service.MovieService;
@@ -63,7 +64,10 @@ public class MovieController {
      * @return updated {@link Movie}
      */
     @PutMapping("/title/{title}")
-    public Movie updateRatingAndReviewByTitle(final @PathVariable("title") String movieTitle, @RequestBody MovieUpdateRequest movieUpdateRequest) {
+    public Movie updateRatingAndReviewByTitle(final @PathVariable("title") String movieTitle, @RequestBody MovieUpdateRequest movieUpdateRequest) throws InvalidValueException {
+        if(movieUpdateRequest.getRating() == null){
+            throw new InvalidValueException("A star rating is required");
+        }
         return movieService.updateRatingAndReviewByTitle(movieTitle, movieUpdateRequest);
     }
 }

@@ -216,6 +216,15 @@ public class MovieControllerTest {
         verify(movieService, times(1)).updateRatingByTitle(any(), any());
     }
 
+    /**
+     * As a user, I can review a movie so that I can share my thoughts about it.
+     * <p>
+     * Given an existing movie
+     * When I submit a star rating and text review
+     * Then I can see my contribution on the movie details.
+     *
+     * @throws Exception
+     */
     @Test
     @DisplayName("updateReviewAndRatingByTitle - existing movie")
     public void testUpdateReviewAndRatingByTitle() throws Exception {
@@ -239,6 +248,35 @@ public class MovieControllerTest {
                 .andExpect(jsonPath("rating").value(movie.getRating()))
                 .andExpect(jsonPath("review").value(movie.getReview()));
         verify(movieService, times(1)).updateRatingAndReviewByTitle(any(), any());
+    }
+
+    /**
+     * As a user, I can review a movie so that I can share my thoughts about it.
+     * <p>
+     * <p>
+     * Given an existing movie
+     * When I submit a text review without a star rating
+     * Then I receive a friendly message that a star rating is required.
+     *
+     * @throws Exception
+     */
+    @Test
+    @DisplayName("updateReviewAndRatingByTitle - existing movie, but without Rating")
+    public void testUpdateReviewAndRatingByTitleWithoutRating() throws Exception {
+        Movie movie = buildSingleMovieList().get(0);
+        movie.setRating("5");
+        MovieUpdateRequest updateRequest = MovieUpdateRequest.builder()
+                .review("Good movie to watch")
+                .build();
+        ObjectMapper objectMapper = new ObjectMapper();
+        when(movieService.updateRatingAndReviewByTitle(any(), any())).thenReturn(movie);
+        mockMvc.perform(put("/api/gmdb/movies/title/{title}", "The Avengers")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$").value("A star rating is required"));
+        ;
+        verify(movieService, times(0)).updateRatingAndReviewByTitle(any(), any());
     }
 
     /**

@@ -12,3 +12,5 @@ Then I can see a list of all movies.
 | /api/gmdb/movies/title/{title} | GET           |     404        |      Return a message  'Movie doesn't exist'                 |   |
 | /api/gmdb/movies/title/{title}/rating/{rating} | PUT             |   200          |    Update the rating to the movie matched with title and Return the movie detail.                                  |   |
 | /api/gmdb/movies/title/{title} | PUT             |   200          |    Update the rating and review to the movie matched with title and Return the movie detail.                                  |   |
+| /api/gmdb/movies/title/{title} | PUT             |   400          |    Update the review without rating to the movie matched with title  and Return the message 'A star rating is required'.       |   |
+
