@@ -14,6 +14,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.Mockito.*;
@@ -35,6 +36,16 @@ public class MovieServiceTest {
         List<Movie> actualMoviesList= movieService.findAllMovies();
         assertThat(actualMoviesList).isSameAs(movieList);
         verify(movieRepository, times(1)).findAll();
+    }
+
+    @Test
+    @DisplayName("findMovieByTitle - Find an existing movie by title")
+    public void testFindMovieByTitle() throws IOException {
+        Movie movie = buildSingleMovieList().get(0);
+        when(movieRepository.findById(any())).thenReturn(Optional.of(movie));
+        Movie actualMovie= movieService.findMovieByTitle("The Avengers");
+        assertThat(actualMovie).isSameAs(movie);
+        verify(movieRepository, times(1)).findById(any());
     }
 
     /**

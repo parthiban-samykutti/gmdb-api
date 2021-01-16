@@ -22,7 +22,7 @@ public class MovieService {
 
     public Movie findMovieByTitle(String movieTitle) {
 
-        return null;
+        return movieRepository.findById(movieTitle).get();
     }
 
     public Movie updateRatingByTitle(String movieTitle, String movieRating) {
