@@ -2,6 +2,7 @@ package com.cts.galvenize.gmdb.service;
 
 import com.cts.galvenize.gmdb.controller.MovieControllerTest;
 import com.cts.galvenize.gmdb.entity.Movie;
+import com.cts.galvenize.gmdb.entity.Rating;
 import com.cts.galvenize.gmdb.repository.MovieRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -57,6 +58,19 @@ public class MovieServiceTest {
         verify(movieRepository, times(1)).findById(any());
     }
 
+    @Test
+    @DisplayName("UpdateRatingByTitle - Update the rating of the existing movie")
+    public void testUpdateRatingByTitle() throws IOException {
+        Movie movie = buildSingleMovieList().get(0);
+        Rating rating = new Rating();
+        movie.setRatingPattern(rating);
+        when(movieRepository.findById(any())).thenReturn(Optional.of(movie));
+        when(movieRepository.save(any())).thenReturn(movie);
+        Movie actualMovie= movieService.updateRatingByTitle("The Avengers", "5");
+        assertThat(actualMovie.getRating()).isEqualTo("5");
+        verify(movieRepository, times(1)).findById(any());
+        verify(movieRepository, times(1)).save(any());
+    }
     /**
      * Builds a Movie list with multiple movie from a json file.
      *
