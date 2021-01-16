@@ -2,19 +2,20 @@ package com.cts.galvenize.gmdb;
 
 import com.cts.galvenize.gmdb.entity.Movie;
 import com.cts.galvenize.gmdb.entity.Rating;
+import com.cts.galvenize.gmdb.model.MovieUpdateRequest;
 import com.cts.galvenize.gmdb.repository.MovieRepository;
 import com.cts.galvenize.gmdb.service.MovieService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import javax.transaction.Transactional;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -125,6 +126,28 @@ public class MovieAPIIntegrationTest {
                 .andExpect(jsonPath("release").value(movie.getRelease()))
                 .andExpect(jsonPath("description").value(movie.getDescription()))
                 .andExpect(jsonPath("rating").value("4"));
+    }
+
+    @Test
+    @DisplayName("updateReviewAndRatingByTitle - existing movie")
+    public void testUpdateReviewAndRatingByTitle() throws Exception {
+        Movie movie = createAvengerMovie(null);
+        MovieUpdateRequest updateRequest = MovieUpdateRequest.builder()
+                .review("Good movie to watch")
+                .rating("5")
+                .build();
+        ObjectMapper objectMapper = new ObjectMapper();
+        mockMvc.perform(put("/api/gmdb/movies/title/{title}", "The Avengers")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateRequest)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("title").value(movie.getTitle()))
+                .andExpect(jsonPath("director").value(movie.getDirector()))
+                .andExpect(jsonPath("actors").value(movie.getActors()))
+                .andExpect(jsonPath("release").value(movie.getRelease()))
+                .andExpect(jsonPath("description").value(movie.getDescription()))
+                .andExpect(jsonPath("rating").value(movie.getRating()))
+                .andExpect(jsonPath("review").value(movie.getReview()));
     }
 
     private void createSuperManMovie() {
