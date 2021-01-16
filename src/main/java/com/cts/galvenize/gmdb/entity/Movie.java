@@ -10,4 +10,5 @@ public class Movie {
     private String release;
     private String description;
     private String rating;
+    private String review;
 }

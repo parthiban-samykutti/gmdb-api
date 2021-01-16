@@ -1,6 +1,7 @@
 package com.cts.galvenize.gmdb.controller;
 
 import com.cts.galvenize.gmdb.entity.Movie;
+import com.cts.galvenize.gmdb.model.MovieUpdateRequest;
 import com.cts.galvenize.gmdb.service.MovieService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
@@ -164,10 +166,11 @@ public class MovieControllerTest {
 
     /**
      * As a user, I can give a star rating to a movie so that I can share my experiences with others.
-     *
+     * <p>
      * Given an existing movie
      * When I submit a 5 star rating
      * Then I can see it in the movie details.
+     *
      * @throws Exception
      */
     @Test
@@ -186,12 +189,14 @@ public class MovieControllerTest {
                 .andExpect(jsonPath("rating").value("5"));
         verify(movieService, times(1)).updateRatingByTitle(any(), any());
     }
+
     /**
      * As a user, I can give a star rating to a movie so that I can share my experiences with others.
-     *
+     * <p>
      * Given an existing movie
      * When I submit a 5 star rating
      * Then I can see it in the movie details.
+     *
      * @throws Exception
      */
     @Test
@@ -210,6 +215,32 @@ public class MovieControllerTest {
                 .andExpect(jsonPath("rating").value("4"));
         verify(movieService, times(1)).updateRatingByTitle(any(), any());
     }
+
+    @Test
+    @DisplayName("updateReviewAndRatingByTitle - existing movie")
+    public void testUpdateReviewAndRatingByTitle() throws Exception {
+        Movie movie = buildSingleMovieList().get(0);
+        movie.setRating("5");
+        MovieUpdateRequest updateRequest = MovieUpdateRequest.builder()
+                .review("Good movie to watch")
+                .rating("5")
+                .build();
+        ObjectMapper objectMapper = new ObjectMapper();
+        when(movieService.updateRatingAndReviewByTitle(any(), any())).thenReturn(movie);
+        mockMvc.perform(put("/api/gmdb/movies/title/{title}", "The Avengers")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateRequest)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("title").value(movie.getTitle()))
+                .andExpect(jsonPath("director").value(movie.getDirector()))
+                .andExpect(jsonPath("actors").value(movie.getActors()))
+                .andExpect(jsonPath("release").value(movie.getRelease()))
+                .andExpect(jsonPath("description").value(movie.getDescription()))
+                .andExpect(jsonPath("rating").value(movie.getRating()))
+                .andExpect(jsonPath("review").value(movie.getReview()));
+        verify(movieService, times(1)).updateRatingAndReviewByTitle(any(), any());
+    }
+
     /**
      * Builds a Movie list with multiple movie from a json file.
      *

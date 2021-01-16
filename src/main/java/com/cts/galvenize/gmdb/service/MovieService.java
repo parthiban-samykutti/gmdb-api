@@ -1,6 +1,7 @@
 package com.cts.galvenize.gmdb.service;
 
 import com.cts.galvenize.gmdb.entity.Movie;
+import com.cts.galvenize.gmdb.model.MovieUpdateRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -20,6 +21,10 @@ public class MovieService {
     }
 
     public Movie updateRatingByTitle(String movieTitle, String movieRating) {
+        return null;
+    }
+
+    public Movie updateRatingAndReviewByTitle(String movieTitle, MovieUpdateRequest movieUpdateRequest) {
         return null;
     }
 }
