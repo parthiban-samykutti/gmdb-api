@@ -26,9 +26,7 @@ public class MovieService {
 
     public Movie updateRatingByTitle(String movieTitle, String movieRating) {
         Movie movie = getMovie(movieTitle, movieRating);
-        Movie savedMovie = movieRepository.save(movie);
-
-        return savedMovie;
+        return movieRepository.save(movie);
     }
 
     private Movie getMovie(String movieTitle, String movieRating) {

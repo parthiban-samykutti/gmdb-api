@@ -16,8 +16,6 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import javax.transaction.Transactional;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -37,6 +35,14 @@ public class MovieAPIIntegrationTest {
     @Autowired
     private MovieRepository movieRepository;
 
+    /**
+     * As a user, I should see a list of movies when I visit GMDB.
+     * <p>
+     * When I visit GMDB
+     * Then I can see a list of all movies.
+     *
+     * @throws Exception
+     */
     @Test
     @DisplayName("findAllMovies - With No Movie")
     public void testFindAllMoviesWithNoMovie() throws Exception {
@@ -45,6 +51,14 @@ public class MovieAPIIntegrationTest {
                 .andExpect(jsonPath("length()").value(0));
     }
 
+    /**
+     * As a user, I should see a list of movies when I visit GMDB.
+     * <p>
+     * When I visit GMDB
+     * Then I can see a list of all movies.
+     *
+     * @throws Exception
+     */
     @Test
     @DisplayName("findAllMovies - One value")
     public void testFindAllMoviesWithOneValue() throws Exception {
@@ -60,6 +74,14 @@ public class MovieAPIIntegrationTest {
                 .andExpect(jsonPath("$[0].rating").doesNotExist());
     }
 
+    /**
+     * As a user, I should see a list of movies when I visit GMDB.
+     * <p>
+     * When I visit GMDB
+     * Then I can see a list of all movies.
+     *
+     * @throws Exception
+     */
     @Test
     @DisplayName("findAllMovies - Multiple movies")
     public void testFindAllMoviesWithMultipleValue() throws Exception {
@@ -76,6 +98,17 @@ public class MovieAPIIntegrationTest {
                 .andExpect(jsonPath("$[0].rating").doesNotExist());
     }
 
+    /**
+     * As a user, I can browse each movie so I can learn all the details.
+     * <p>
+     * Rule: Movie details include title, director, actors, release year, description and star rating.
+     * <p>
+     * Given an existing movie
+     * When I visit that title
+     * Then I can see all the movie details.
+     *
+     * @throws Exception
+     */
     @Test
     @DisplayName("findMovieByTitle - existing movie")
     public void testFindMovieByTitleWithExistingMovie() throws Exception {
@@ -90,6 +123,17 @@ public class MovieAPIIntegrationTest {
                 .andExpect(jsonPath("rating").doesNotExist());
     }
 
+    /**
+     * As a user, I can browse each movie so I can learn all the details.
+     * <p>
+     * Rule: Movie details include title, director, actors, release year, description and star rating.
+     * <p>
+     * Given a non-existing movie
+     * When I visit that title
+     * Then I receive a friendly message that it doesn't exist.
+     *
+     * @throws Exception
+     */
     @Test
     @DisplayName("findMovieByTitle - non-existing movie")
     public void testFindMovieByTitleWithNonExistingMovie() throws Exception {
@@ -98,6 +142,15 @@ public class MovieAPIIntegrationTest {
                 .andExpect(jsonPath("$").value("Movie doesn't exist"));
     }
 
+    /**
+     * As a user, I can give a star rating to a movie so that I can share my experiences with others.
+     * <p>
+     * Given an existing movie
+     * When I submit a 5 star rating
+     * Then I can see it in the movie details.
+     *
+     * @throws Exception
+     */
     @Test
     @DisplayName("updateRatingByTitle - existing movie (no star exists, but add one new 5Star)")
     public void testUpdateRatingByTitleRetrun5Star() throws Exception {
@@ -112,6 +165,15 @@ public class MovieAPIIntegrationTest {
                 .andExpect(jsonPath("rating").value("5"));
     }
 
+    /**
+     * As a user, I can give a star rating to a movie so that I can share my experiences with others.
+     * <p>
+     * Given an existing movie
+     * When I submit a 5 star rating
+     * Then I can see it in the movie details.
+     *
+     * @throws Exception
+     */
     @Test
     @DisplayName("updateRatingByTitle - existing movie (one 5 star exist, add one new 3Star)")
     public void testUpdateRatingByTitleReturn4Star() throws Exception {
@@ -130,6 +192,15 @@ public class MovieAPIIntegrationTest {
                 .andExpect(jsonPath("rating").value("4"));
     }
 
+    /**
+     * As a user, I can review a movie so that I can share my thoughts about it.
+     * <p>
+     * Given an existing movie
+     * When I submit a star rating and text review
+     * Then I can see my contribution on the movie details.
+     *
+     * @throws Exception
+     */
     @Test
     @DisplayName("updateReviewAndRatingByTitle - existing movie")
     public void testUpdateReviewAndRatingByTitle() throws Exception {
@@ -152,6 +223,16 @@ public class MovieAPIIntegrationTest {
                 .andExpect(jsonPath("review").value(movie.getReview()));
     }
 
+    /**
+     * As a user, I can review a movie so that I can share my thoughts about it.
+     * <p>
+     * <p>
+     * Given an existing movie
+     * When I submit a text review without a star rating
+     * Then I receive a friendly message that a star rating is required.
+     *
+     * @throws Exception
+     */
     @Test
     @DisplayName("updateReviewAndRatingByTitle - existing movie, but without Rating")
     public void testUpdateReviewAndRatingByTitleWithoutRating() throws Exception {

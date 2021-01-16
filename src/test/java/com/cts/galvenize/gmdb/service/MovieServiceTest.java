@@ -52,7 +52,7 @@ public class MovieServiceTest {
 
     @Test
     @DisplayName("findMovieByTitle - Find movie by title with non existing title")
-    public void testFindMovieByTitleNonExistingMovie() throws IOException {
+    public void testFindMovieByTitleNonExistingMovie(){
         when(movieRepository.findById(any())).thenReturn(Optional.ofNullable(null));
         Movie actualMovie= movieService.findMovieByTitle("The Avengers");
         assertThat(actualMovie).isNull();

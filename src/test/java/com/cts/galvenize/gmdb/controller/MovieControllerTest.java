@@ -156,8 +156,7 @@ public class MovieControllerTest {
     @Test
     @DisplayName("findMovieByTitle - non-existing movie")
     public void testFindMovieByTitleWithNonExistingMovie() throws Exception {
-        Movie movie = null;
-        when(movieService.findMovieByTitle(any())).thenReturn(movie);
+        when(movieService.findMovieByTitle(any())).thenReturn(null);
         mockMvc.perform(get("/api/gmdb/movies/title/{title}", "WonderWomen"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$").value("Movie doesn't exist"));
@@ -286,9 +285,8 @@ public class MovieControllerTest {
      */
     private List<Movie> buildMultipleMovieList() throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
-        List<Movie> movieList = objectMapper.readValue(MovieControllerTest.class.getClassLoader().getResourceAsStream("movies.json"), new TypeReference<ArrayList<Movie>>() {
+        return objectMapper.readValue(MovieControllerTest.class.getClassLoader().getResourceAsStream("movies.json"), new TypeReference<ArrayList<Movie>>() {
         });
-        return movieList;
     }
 
     /**

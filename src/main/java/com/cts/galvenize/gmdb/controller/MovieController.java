@@ -25,14 +25,14 @@ public class MovieController {
      * @return movie list
      */
     @GetMapping
-    public List findAllMovies() {
+    public List<Movie> findAllMovies() {
         return movieService.findAllMovies();
     }
 
     /**
      * Find the {@link Movie} by title.
      *
-     * @param movieTitle
+     * @param movieTitle tile of the movie
      * @return matched {@link Movie}
      * @throws MovieNotFoundException
      */
