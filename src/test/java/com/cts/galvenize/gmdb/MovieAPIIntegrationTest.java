@@ -15,6 +15,7 @@ import javax.transaction.Transactional;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -91,6 +92,20 @@ public class MovieAPIIntegrationTest {
         mockMvc.perform(get("/api/gmdb/movies/title/{title}", "WonderWomen"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$").value("Movie doesn't exist"));
+    }
+
+    @Test
+    @DisplayName("updateRatingByTitle - existing movie (no star exists, but add one new 5Star)")
+    public void testUpdateRatingByTitleRetrun5Star() throws Exception {
+        Movie movie = createAvengerMovie();
+        mockMvc.perform(put("/api/gmdb/movies/title/{title}/rating/{rating}", "The Avengers", "5"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("title").value(movie.getTitle()))
+                .andExpect(jsonPath("director").value(movie.getDirector()))
+                .andExpect(jsonPath("actors").value(movie.getActors()))
+                .andExpect(jsonPath("release").value(movie.getRelease()))
+                .andExpect(jsonPath("description").value(movie.getDescription()))
+                .andExpect(jsonPath("rating").value("5"));
     }
 
     private void createSuperManMovie() {

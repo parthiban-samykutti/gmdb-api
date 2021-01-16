@@ -34,6 +34,9 @@ public class MovieService {
     private Movie getMovie(String movieTitle, String movieRating) {
         Movie movie = findMovieByTitle(movieTitle);
         Rating rating = movie.getRatingPattern();
+        if(rating == null){
+            rating = new Rating();
+        }
         switch (movieRating){
             case "1":
                 rating.setOneStar(rating.getOneStar()+1);
