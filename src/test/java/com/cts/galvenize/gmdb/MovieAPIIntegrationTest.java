@@ -1,6 +1,7 @@
 package com.cts.galvenize.gmdb;
 
 import com.cts.galvenize.gmdb.entity.Movie;
+import com.cts.galvenize.gmdb.entity.Rating;
 import com.cts.galvenize.gmdb.repository.MovieRepository;
 import com.cts.galvenize.gmdb.service.MovieService;
 import org.junit.jupiter.api.DisplayName;
@@ -44,7 +45,7 @@ public class MovieAPIIntegrationTest {
     @Test
     @DisplayName("findAllMovies - One value")
     public void testFindAllMoviesWithOneValue() throws Exception {
-        createAvengerMovie();
+        createAvengerMovie(null);
         mockMvc.perform(get("/api/gmdb/movies"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("length()").value(1))
@@ -59,7 +60,7 @@ public class MovieAPIIntegrationTest {
     @Test
     @DisplayName("findAllMovies - Multiple movies")
     public void testFindAllMoviesWithMultipleValue() throws Exception {
-        createAvengerMovie();
+        createAvengerMovie(null);
         createSuperManMovie();
         mockMvc.perform(get("/api/gmdb/movies"))
                 .andExpect(status().isOk())
@@ -75,7 +76,7 @@ public class MovieAPIIntegrationTest {
     @Test
     @DisplayName("findMovieByTitle - existing movie")
     public void testFindMovieByTitleWithExistingMovie() throws Exception {
-        Movie movie = createAvengerMovie();
+        Movie movie = createAvengerMovie(null);
         mockMvc.perform(get("/api/gmdb/movies/title/{title}", "The Avengers"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("title").value(movie.getTitle()))
@@ -97,7 +98,7 @@ public class MovieAPIIntegrationTest {
     @Test
     @DisplayName("updateRatingByTitle - existing movie (no star exists, but add one new 5Star)")
     public void testUpdateRatingByTitleRetrun5Star() throws Exception {
-        Movie movie = createAvengerMovie();
+        Movie movie = createAvengerMovie(null);
         mockMvc.perform(put("/api/gmdb/movies/title/{title}/rating/{rating}", "The Avengers", "5"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("title").value(movie.getTitle()))
@@ -106,6 +107,24 @@ public class MovieAPIIntegrationTest {
                 .andExpect(jsonPath("release").value(movie.getRelease()))
                 .andExpect(jsonPath("description").value(movie.getDescription()))
                 .andExpect(jsonPath("rating").value("5"));
+    }
+
+    @Test
+    @DisplayName("updateRatingByTitle - existing movie (one 5 star exist, add one new 3Star)")
+    public void testUpdateRatingByTitleReturn4Star() throws Exception {
+        Rating rating = Rating.builder()
+                .fiveStar(1)
+                .title("The Avengers")
+                .build();
+        Movie movie = createAvengerMovie(rating);
+        mockMvc.perform(put("/api/gmdb/movies/title/{title}/rating/{rating}", "The Avengers", "3"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("title").value(movie.getTitle()))
+                .andExpect(jsonPath("director").value(movie.getDirector()))
+                .andExpect(jsonPath("actors").value(movie.getActors()))
+                .andExpect(jsonPath("release").value(movie.getRelease()))
+                .andExpect(jsonPath("description").value(movie.getDescription()))
+                .andExpect(jsonPath("rating").value("4"));
     }
 
     private void createSuperManMovie() {
@@ -119,12 +138,13 @@ public class MovieAPIIntegrationTest {
         movieRepository.save(movie);
     }
 
-    private Movie createAvengerMovie() {
+    private Movie createAvengerMovie(Rating rating) {
         Movie movie = Movie.builder()
                 .title("The Avengers")
                 .actors("Robert Downey Jr., Chris Evans, Mark Ruffalo, Chris Hemsworth")
                 .director("Joss Whedon")
                 .release("2012")
+                .ratingPattern(rating)
                 .description("Earth's mightiest heroes must come together and learn to fight as a team if they are going to stop the mischievous Loki and his alien army from enslaving humanity.")
                 .build();
         return movieRepository.save(movie);
