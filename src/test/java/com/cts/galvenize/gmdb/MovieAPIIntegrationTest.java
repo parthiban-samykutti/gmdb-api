@@ -12,6 +12,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import javax.transaction.Transactional;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -69,6 +71,20 @@ public class MovieAPIIntegrationTest {
                 .andExpect(jsonPath("$[0].rating").doesNotExist());
     }
 
+    @Test
+    @DisplayName("findMovieByTitle - existing movie")
+    public void testFindMovieByTitleWithExistingMovie() throws Exception {
+        Movie movie = createAvengerMovie();
+        mockMvc.perform(get("/api/gmdb/movies/title/{title}", "The Avengers"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("title").value(movie.getTitle()))
+                .andExpect(jsonPath("director").value(movie.getDirector()))
+                .andExpect(jsonPath("actors").value(movie.getActors()))
+                .andExpect(jsonPath("release").value(movie.getRelease()))
+                .andExpect(jsonPath("description").value(movie.getDescription()))
+                .andExpect(jsonPath("rating").doesNotExist());
+    }
+
     private void createSuperManMovie() {
         Movie movie = Movie.builder()
                 .title("Superman Returns")
@@ -80,7 +96,7 @@ public class MovieAPIIntegrationTest {
         movieRepository.save(movie);
     }
 
-    private void createAvengerMovie() {
+    private Movie createAvengerMovie() {
         Movie movie = Movie.builder()
                 .title("The Avengers")
                 .actors("Robert Downey Jr., Chris Evans, Mark Ruffalo, Chris Hemsworth")
@@ -88,6 +104,6 @@ public class MovieAPIIntegrationTest {
                 .release("2012")
                 .description("Earth's mightiest heroes must come together and learn to fight as a team if they are going to stop the mischievous Loki and his alien army from enslaving humanity.")
                 .build();
-        movieRepository.save(movie);
+        return movieRepository.save(movie);
     }
 }
