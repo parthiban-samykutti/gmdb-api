@@ -3,6 +3,7 @@ package com.cts.galvenize.gmdb.service;
 import com.cts.galvenize.gmdb.controller.MovieControllerTest;
 import com.cts.galvenize.gmdb.entity.Movie;
 import com.cts.galvenize.gmdb.entity.Rating;
+import com.cts.galvenize.gmdb.model.MovieUpdateRequest;
 import com.cts.galvenize.gmdb.repository.MovieRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -71,6 +72,46 @@ public class MovieServiceTest {
         verify(movieRepository, times(1)).findById(any());
         verify(movieRepository, times(1)).save(any());
     }
+
+    /**
+     * Test case to check the movie rating for a movie with one 3 star and giving a 5 star review
+     * Expected rating is 4 star review
+     * @throws IOException
+     */
+    @Test
+    @DisplayName("UpdateRatingByTitle - Update the rating of the existing movie with existing rating")
+    public void testUpdateRatingByTitleWIthExistingRating() throws IOException {
+        Movie movie = buildSingleMovieList().get(0);
+        Rating rating = new Rating();
+        rating.setThreeStar(1);
+        movie.setRatingPattern(rating);
+        when(movieRepository.findById(any())).thenReturn(Optional.of(movie));
+        when(movieRepository.save(any())).thenReturn(movie);
+        Movie actualMovie= movieService.updateRatingByTitle("The Avengers", "5");
+        assertThat(actualMovie.getRating()).isEqualTo("4");
+        verify(movieRepository, times(1)).findById(any());
+        verify(movieRepository, times(1)).save(any());
+    }
+
+    @Test
+    @DisplayName("updateRatingAndReviewByTitle - Update the rating and text review of the existing movie")
+    public void testupdateRatingAndReviewByTitle() throws IOException {
+        Movie movie = buildSingleMovieList().get(0);
+        Rating rating = new Rating();
+        movie.setRatingPattern(rating);
+        MovieUpdateRequest updateRequest = MovieUpdateRequest.builder()
+                .review("Good movie to watch")
+                .rating("5")
+                .build();
+        when(movieRepository.findById(any())).thenReturn(Optional.of(movie));
+        when(movieRepository.save(any())).thenReturn(movie);
+        Movie actualMovie= movieService.updateRatingAndReviewByTitle("The Avengers", updateRequest);
+        assertThat(actualMovie.getRating()).isEqualTo("5");
+        assertThat(actualMovie.getReview()).isEqualTo(updateRequest.getReview());
+        verify(movieRepository, times(1)).findById(any());
+        verify(movieRepository, times(1)).save(any());
+    }
+
     /**
      * Builds a Movie list with multiple movie from a json file.
      *

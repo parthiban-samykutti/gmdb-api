@@ -25,6 +25,13 @@ public class MovieService {
     }
 
     public Movie updateRatingByTitle(String movieTitle, String movieRating) {
+        Movie movie = getMovie(movieTitle, movieRating);
+        Movie savedMovie = movieRepository.save(movie);
+
+        return savedMovie;
+    }
+
+    private Movie getMovie(String movieTitle, String movieRating) {
         Movie movie = findMovieByTitle(movieTitle);
         Rating rating = movie.getRatingPattern();
         switch (movieRating){
@@ -45,9 +52,7 @@ public class MovieService {
                 break;
         }
         movie.setRating(String.valueOf(calculateRating(rating)));
-        Movie savedMovie = movieRepository.save(movie);
-
-        return savedMovie;
+        return movie;
     }
 
     private int calculateRating(Rating rating) {
@@ -73,6 +78,8 @@ public class MovieService {
     }
 
     public Movie updateRatingAndReviewByTitle(String movieTitle, MovieUpdateRequest movieUpdateRequest) {
-        return null;
+        Movie movie = getMovie(movieTitle, movieUpdateRequest.getRating());
+        movie.setReview(movieUpdateRequest.getReview());
+        return movieRepository.save(movie);
     }
 }
