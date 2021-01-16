@@ -171,8 +171,8 @@ public class MovieControllerTest {
      * @throws Exception
      */
     @Test
-    @DisplayName("updateRatingByTitle - existing movie")
-    public void testUpdateRatingByTitle() throws Exception {
+    @DisplayName("updateRatingByTitle - existing movie (no star exists, but add one new 5Star)")
+    public void testUpdateRatingByTitleRetrun5Star() throws Exception {
         Movie movie = buildSingleMovieList().get(0);
         movie.setRating("5");
         when(movieService.updateRatingByTitle(any(), any())).thenReturn(movie);
@@ -186,7 +186,30 @@ public class MovieControllerTest {
                 .andExpect(jsonPath("rating").value("5"));
         verify(movieService, times(1)).updateRatingByTitle(any(), any());
     }
-
+    /**
+     * As a user, I can give a star rating to a movie so that I can share my experiences with others.
+     *
+     * Given an existing movie
+     * When I submit a 5 star rating
+     * Then I can see it in the movie details.
+     * @throws Exception
+     */
+    @Test
+    @DisplayName("updateRatingByTitle - existing movie (one 5 star exist, add one new 3Star)")
+    public void testUpdateRatingByTitleReturn4Star() throws Exception {
+        Movie movie = buildSingleMovieList().get(0);
+        movie.setRating("4");
+        when(movieService.updateRatingByTitle(any(), any())).thenReturn(movie);
+        mockMvc.perform(put("/api/gmdb/movies/title/{title}/rating/{rating}", "The Avengers", "3"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("title").value(movie.getTitle()))
+                .andExpect(jsonPath("director").value(movie.getDirector()))
+                .andExpect(jsonPath("actors").value(movie.getActors()))
+                .andExpect(jsonPath("release").value(movie.getRelease()))
+                .andExpect(jsonPath("description").value(movie.getDescription()))
+                .andExpect(jsonPath("rating").value("4"));
+        verify(movieService, times(1)).updateRatingByTitle(any(), any());
+    }
     /**
      * Builds a Movie list with multiple movie from a json file.
      *
