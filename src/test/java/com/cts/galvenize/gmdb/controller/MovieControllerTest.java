@@ -112,6 +112,22 @@ public class MovieControllerTest {
         verify(movieService, times(1)).findAllMovies();
     }
 
+    @Test
+    @DisplayName("findMovieByTitle - existing movie")
+    public void testFindMovieByTitleWithExistingMovie() throws Exception {
+        Movie movie = buildSingleMovieList().get(0);
+        when(movieService.findMovieByTitle(any())).thenReturn(movie);
+        mockMvc.perform(get("/api/gmdb/movies/title/{title}", "The Avengers"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("title").value(movie.getTitle()))
+                .andExpect(jsonPath("director").value(movie.getDirector()))
+                .andExpect(jsonPath("actors").value(movie.getActors()))
+                .andExpect(jsonPath("release").value(movie.getRelease()))
+                .andExpect(jsonPath("description").value(movie.getDescription()))
+                .andExpect(jsonPath("rating").doesNotExist());
+        verify(movieService, times(1)).findMovieByTitle(any());
+    }
+
     /**
      * Builds a Movie list with multiple movie from a json file.
      *

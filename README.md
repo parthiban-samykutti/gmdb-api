@@ -8,5 +8,5 @@ Then I can see a list of all movies.
 | URI              | HTTP Method | HTTP Status | DESC                                 |   |
 |------------------|-------------|-------------|--------------------------------------|---|
 | /api/gmdb/movies | GET         | 200         | List all the available movies titles |   |
-|                  |             |             |                                      |   |
-|                  |             |             |                                      |   |
+| /api/gmdb/movies/title/{title} | GET             |   200          |    Return the movie detail matched with title.                                  |   |
+| /api/gmdb/movies/title/{title} | GET           |     404        |      Return a message  'Movie doesn't exist'                 |   |
